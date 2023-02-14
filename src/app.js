@@ -1,7 +1,12 @@
-const me = {
-    name: "Peter",
-    age: 23
-}
+const express = require('express');
+const app = express();
+const PORT = 3000;
 
-const { name: myName } = me;
-console.log(myName);
+app.get('/', (req, res) => {
+    // console.log(req.method + ' ' + req.url);
+    res.send('Hello world!');
+});
+
+app.listen(PORT, () => {
+    console.log('Server running on port ' + PORT);
+})
