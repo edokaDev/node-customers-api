@@ -40,6 +40,63 @@ app.post('/api/customers', async (req, res) => {
     }
 });
 
+app.get('/api/customers/:id', async (req, res) => {
+    // get the id from the url params (using destructuring)
+    const { id: customerId } = req.params;
+    try {
+        // get customer by id
+        const customer = await Customer.findById(customerId);
+        if (customer !== null) {
+            // return customer if exist
+            res.json({customer});
+        } else {
+            res.status(404).json({error: 'user not found'});
+        }
+    } catch(e) {
+        res.status(500).json({error: 'something went wrong'})
+    }
+});
+
+app.put('/api/customers/:id', async (req, res) => {
+    // get the id from the url params (using destructuring)
+    const { id: customerId } = req.params;
+    try {
+        // get customer by id
+        const customer = await Customer.findById(customerId);
+        if (customer !== null) {
+            // update customer if exist (using PUT)
+            const result = await Customer.replaceOne({_id: customerId}, req.body);
+            console.log(result);
+            // customer.replaceOne(req.body);
+            res.status(200).json({msg: 'user updated'});
+        } else {
+            res.status(404).json({error: 'user not found'});
+        }
+    } catch(e) {
+        res.status(500).json({error: e.message})
+    }
+});
+
+app.delete('/api/customers/:id', async (req, res) => {
+    // get the id from the url params (using destructuring)
+    const { id: customerId } = req.params;
+    try {
+        // get customer by id
+        const customer = await Customer.findById(customerId);
+        if (customer !== null) {
+            // delete customer if exist (using PUT)
+            customer.deleteOne();
+            // const result = await Customer.deleteOne({_id: customerId});
+            // console.log(result);
+            res.status(200).json({msg: 'user delete'});
+        } else {
+            res.status(404).json({error: 'user not found'});
+        }
+    } catch(e) {
+        res.status(500).json({error: e.message})
+    }
+});
+
 // DB Connection
 const start = async() => {
     try {
