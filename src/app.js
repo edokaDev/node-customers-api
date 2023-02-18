@@ -24,7 +24,7 @@ app.use(cors());
 // ENDPOINTS
 app.get('/', (req, res) => {
     // console.log(req.method + ' ' + req.url);
-    res.send('Hello world!');
+    res.json({msg: 'Hello world!'});
 });
 
 app.get('/api/customers', async (req, res) => {
@@ -69,9 +69,9 @@ app.put('/api/customers/:id', async (req, res) => {
         const customer = await Customer.findById(customerId);
         if (customer !== null) {
             // update customer if exist (using PUT)
-            const result = await Customer.replaceOne({_id: customerId}, req.body);
+            const customer = await Customer.findOneAndReplace({_id: customerId}, req.body, {new: true});
             // customer.replaceOne(req.body);
-            res.status(200).json({msg: 'user updated'});
+            res.send({customer});
         } else {
             res.status(404).json({error: 'user not found'});
         }
