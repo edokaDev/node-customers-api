@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const Customer = require('./models/customer');
 
 mongoose.set('strictQuery', false);
@@ -16,6 +17,9 @@ const CONNECTION = process.env.CONNECTION
 // to get data from post request
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// for CORs
+app.use(cors());
 
 // ENDPOINTS
 app.get('/', (req, res) => {
@@ -66,7 +70,6 @@ app.put('/api/customers/:id', async (req, res) => {
         if (customer !== null) {
             // update customer if exist (using PUT)
             const result = await Customer.replaceOne({_id: customerId}, req.body);
-            console.log(result);
             // customer.replaceOne(req.body);
             res.status(200).json({msg: 'user updated'});
         } else {
