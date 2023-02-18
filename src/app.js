@@ -127,7 +127,7 @@ app.delete('/api/customers/:id', async (req, res) => {
 
 app.patch('/api/orders/:id', async (req, res) => {
     const { id: orderId } = req.params;
-    req.body._id = orderId;
+    req.body._id = orderId; // this is so the patch request doesn't modify the id of the oder
     try {
         const customer = await Customer.findOneAndUpdate(
             // here we are finding the cutomer by the order id
@@ -138,6 +138,23 @@ app.patch('/api/orders/:id', async (req, res) => {
             { new: true }
         );
         res.json({customer});
+    } catch (e) {
+        res.status(500).json({error: e.message})
+    }
+});
+
+app.get('/api/orders/:id', async (req, res) => {
+    const { id: orderId } = req.params;
+    req.body._id = orderId; // this is so the patch request doesn't modify the id of the oder
+    try {
+        const customer = await Customer.findOne(
+            // here we are finding the cutomer by the order id
+            { 'orders._id': orderId },
+        );
+        // finds the first order whose id is the orderId passed in as params
+        const order = customer.orders.find((e) => e._id == orderId);
+        res.json({order});
+        
     } catch (e) {
         res.status(500).json({error: e.message})
     }
