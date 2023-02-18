@@ -80,6 +80,29 @@ app.put('/api/customers/:id', async (req, res) => {
     }
 });
 
+app.patch('/api/customers/:id', async (req, res) => {
+    // get the id from the url params (using destructuring)
+    const { id: customerId } = req.params;
+    try {
+        // get customer by id
+        const customer = await Customer.findById(customerId);
+        if (customer !== null) {
+            // update customer if exist (using PUT)
+            const customer = await Customer.findOneAndUpdate(
+                {_id: customerId},
+                req.body,
+                {new: true}
+            );
+            // customer.replaceOne(req.body);
+            res.send({customer});
+        } else {
+            res.status(404).json({error: 'user not found'});
+        }
+    } catch(e) {
+        res.status(500).json({error: e.message})
+    }
+});
+
 app.delete('/api/customers/:id', async (req, res) => {
     // get the id from the url params (using destructuring)
     const { id: customerId } = req.params;
@@ -88,7 +111,7 @@ app.delete('/api/customers/:id', async (req, res) => {
         const customer = await Customer.findById(customerId);
         if (customer !== null) {
             // delete customer if exist (using PUT)
-            customer.deleteOne();
+            await customer.deleteOne();
             // const result = await Customer.deleteOne({_id: customerId});
             // console.log(result);
             res.status(200).json({msg: 'user delete'});
@@ -99,6 +122,27 @@ app.delete('/api/customers/:id', async (req, res) => {
         res.status(500).json({error: e.message})
     }
 });
+
+// Orders (Handling nested object : which signifies relationships)
+
+app.patch('/api/orders/:id', async (req, res) => {
+    const { id: orderId } = req.params;
+    req.body._id = orderId;
+    try {
+        const customer = await Customer.findOneAndUpdate(
+            // here we are finding the cutomer by the order id
+            { 'orders._id': orderId },
+            // then updating order
+            { $set: { 'orders.$': req.body } },
+            // the new returns the updated customer object with the modified orders
+            { new: true }
+        );
+        res.json({customer});
+    } catch (e) {
+        res.status(500).json({error: e.message})
+    }
+});
+
 
 // DB Connection
 const start = async() => {
