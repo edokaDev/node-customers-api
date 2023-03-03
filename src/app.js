@@ -1,12 +1,13 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const Customer = require('./models/customer');
+import express, { json, urlencoded } from 'express';
+import { set, connect } from 'mongoose';
+import cors from 'cors';
+import Customer from './models/customer.js';
+import dotenv from 'dotenv'
 
-mongoose.set('strictQuery', false);
+set('strictQuery', false);
 
 if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
+    dotenv.config();
 }
 
 const app = express();
@@ -15,8 +16,8 @@ const CONNECTION = process.env.CONNECTION
 
 // This is so that we can use the req.body
 // to get data from post request
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
 // for CORs
 app.use(cors());
@@ -28,7 +29,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/customers', async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     const customers = await Customer.find();
     res.json({customers});
 });
@@ -130,7 +131,7 @@ app.patch('/api/orders/:id', async (req, res) => {
     req.body._id = orderId; // this is so the patch request doesn't modify the id of the oder
     try {
         const customer = await Customer.findOneAndUpdate(
-            // here we are finding the cutomer by the order id
+            // here we are Customer.finding the cutomer by the order id
             { 'orders._id': orderId },
             // then updating order
             { $set: { 'orders.$': req.body } },
@@ -164,7 +165,7 @@ app.get('/api/orders/:id', async (req, res) => {
 // DB Connection
 const start = async() => {
     try {
-        await mongoose.connect(CONNECTION);
+        connect(CONNECTION);
         
         app.listen(PORT, () => {
             console.log('Server running on port ' + PORT);
