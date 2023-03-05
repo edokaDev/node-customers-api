@@ -3,6 +3,7 @@ import { set, connect } from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import CustomerRoute from './routes/Customer.route.js';
+import createError from 'http-errors';
 
 set('strictQuery', false);
 
@@ -28,7 +29,22 @@ app.get('/', (req, res) => {
     res.json({msg: 'Hello world!'});
 });
 
-app.use('/customers', CustomerRoute)
+app.use('/customers', CustomerRoute);
+
+// routes error handling
+app.use(async (req, res, next) => {
+    next(createError.NotFound());
+});
+
+app.use((err, req, res, next) => {
+    res.status = err.status || 500;
+    res.send({
+        "error": {
+            "status": err.status,
+            "message": err.message,
+        }
+    })
+})
 
 // DB Connection
 const start = async() => {
