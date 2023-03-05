@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import CustomerRoute from './routes/Customer.route.js';
 import createError from 'http-errors';
+import morgan from 'morgan';
 
 set('strictQuery', false);
 
@@ -23,13 +24,16 @@ app.use(urlencoded({ extended: true }));
 // for CORs
 app.use(cors());
 
+// for request logging
+app.use(morgan('dev'));
+
 // ENDPOINTS
 app.get('/', (req, res) => {
     // console.log(req.method + ' ' + req.url);
     res.json({msg: 'Hello world!'});
 });
 
-app.use('/customers', CustomerRoute);
+// app.use('/customers', CustomerRoute);
 
 // routes error handling
 app.use(async (req, res, next) => {
