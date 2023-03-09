@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import CustomerRoute from './routes/Customer.route.js';
 import createError from 'http-errors';
 import morgan from 'morgan';
-import initMongo from '../helpers/init_mongodb.js';
+import initMongo from './helpers/init_mongodb.js';
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
