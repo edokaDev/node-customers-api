@@ -1,12 +1,10 @@
 import express, { json, urlencoded } from 'express';
-import { set, connect } from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import CustomerRoute from './routes/Customer.route.js';
 import createError from 'http-errors';
 import morgan from 'morgan';
-
-set('strictQuery', false);
+import initMongo from '../helpers/init_mongodb.js';
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
@@ -33,7 +31,7 @@ app.get('/', (req, res) => {
     res.json({msg: 'Hello world!'});
 });
 
-// app.use('/customers', CustomerRoute);
+app.use('/customers', CustomerRoute);
 
 // routes error handling
 app.use(async (req, res, next) => {
@@ -53,8 +51,8 @@ app.use((err, req, res, next) => {
 // DB Connection
 const start = async() => {
     try {
-        connect(CONNECTION);
-        
+        initMongo();
+
         app.listen(PORT, () => {
             console.log('Server running on port ' + PORT);
         });
